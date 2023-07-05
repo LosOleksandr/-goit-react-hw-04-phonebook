@@ -1,7 +1,7 @@
-import { Field, Form, ErrorMessage } from 'formik';
 import styled from '@emotion/styled';
+import InputMask from '@mona-health/react-input-mask/lib/react-input-mask.development';
 
-export const StyledForm = styled(Form)`
+export const StyledForm = styled.form`
   width: 100%;
   max-width: 380px;
 `;
@@ -13,7 +13,7 @@ export const StyledLabel = styled.label`
   }
 `;
 
-export const StyledField = styled(Field)`
+export const StyledField = styled(InputMask)`
   display: block;
   width: 100%;
   margin-bottom: 10px;
@@ -46,7 +46,7 @@ export const SumbitBtn = styled.button`
   }
 `;
 
-export const StyledErrorMessage = styled(ErrorMessage)`
+export const StyledErrorMessage = styled.small`
   display: block;
   font-size: 14px;
   margin-bottom: 25px;

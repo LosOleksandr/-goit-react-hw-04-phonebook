@@ -3,8 +3,9 @@ import shortid from 'shortid';
 import PropTypes from 'prop-types';
 import { FilterContainer, FilterLabel, FilterInput } from './Filter.styled';
 
+const searchId = shortid.generate();
+
 export default function Filter({ value, onChange }) {
-  const searchId = shortid.generate();
   return (
     <FilterContainer>
       <FilterLabel htmlFor={searchId}>Search</FilterLabel>
@@ -13,7 +14,7 @@ export default function Filter({ value, onChange }) {
         name="search"
         type="text"
         value={value}
-        onChange={onChange}
+        onChange={evt => onChange(evt.target.value)}
       />
     </FilterContainer>
   );

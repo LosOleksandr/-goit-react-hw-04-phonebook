@@ -1,88 +1,70 @@
+import React, { useState, useEffect } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import shortid from 'shortid';
-import React, { Component } from 'react';
 import Filter from 'components/Filter/Filter';
 import PhonebookForm from 'components/PhonebookForm';
 import PhonebookList from 'components/PhonebookList';
 import Section from 'components/Section';
 import { Container } from 'App.styled';
 
-export default class App extends Component {
-  state = {
-    contacts: [],
-    filter: '',
-  };
+export default function App() {
+  const [contacts, setContacts] = useState(
+    JSON.parse(localStorage.getItem('contacts')) ?? []
+  );
+  const [filter, setFilter] = useState('');
 
-  addContact = data => {
+  const addContact = data => {
     data = {
       id: shortid.generate(),
       ...data,
     };
-    const isContactExists = this.state.contacts.some(
-      ({ name, number }) => name === data.name || number === data.number
+    const isContactExist = contacts.some(
+      ({ phoneNumber }) => phoneNumber === data.phoneNumber
     );
 
-    if (isContactExists) {
-      alert('Contact is already exist');
+    if (isContactExist) {
+      toast.error(
+        'Contact with this number was already added to the phonebook'
+      );
       return;
     }
-
-    this.setState(({ contacts }) => {
-      return { contacts: [data, ...contacts] };
-    });
+    setContacts([data, ...contacts]);
   };
 
-  deleteContact = deletedId => {
-    this.setState(prevState => {
-      return {
-        contacts: prevState.contacts.filter(({ id }) => id !== deletedId),
-      };
-    });
+  const deleteContact = id => {
+    setContacts(contacts.filter(contact => contact.id !== id));
   };
 
-  filterContacts = ({ target }) => {
-    this.setState({
-      filter: target.value,
-    });
-  };
+  const filteredContacts = contacts.filter(({ firstName }) =>
+    firstName.toLowerCase().includes(filter.toLowerCase().trim())
+  );
 
-  componentDidUpdate(prevProps, prevState) {
-    if (this.state.contacts !== prevState.contacts) {
-      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
-    }
-  }
-  componentDidMount() {
-    this.setState({
-      contacts: JSON.parse(localStorage.getItem('contacts')) || [],
-    });
-  }
+  useEffect(() => {
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
 
-  render() {
-    const { contacts } = this.state;
-    const normalizedFilter = this.state.filter.toLowerCase();
-    const filteredContacts = this.state.contacts.filter(({ name }) =>
-      name.toLowerCase().includes(normalizedFilter)
-    );
+  return (
+    <Container>
+      <Section title="Phonebook">
+        <PhonebookForm addContact={addContact} />
+      </Section>
+      <Section title="Contacts">
+        <Filter value={filter} onChange={setFilter} />
+        {contacts.length !== 0 ? (
+          <PhonebookList
+            contacts={filteredContacts}
+            deleteContact={deleteContact}
+          />
+        ) : (
+          <h2>No contacts!</h2>
+        )}
 
-    return (
-      <Container>
-        <Section title="Phonebook">
-          <PhonebookForm onSubmit={this.addContact} />
-        </Section>
-        <Section title="Contacts">
-          <Filter value={this.state.filter} onChange={this.filterContacts} />
-          {contacts.length ? (
-            <PhonebookList
-              contacts={filteredContacts}
-              deleteContact={this.deleteContact}
-            />
-          ) : (
-            <p>You don't have any contacts!</p>
-          )}
-          {!filteredContacts.length && contacts.length ? (
-            <p>There are any matches!</p>
-          ) : null}
-        </Section>
-      </Container>
-    );
-  }
+        {contacts.length !== 0 && !filteredContacts.length && (
+          <h2>No matches!</h2>
+        )}
+      </Section>
+      <ToastContainer />
+    </Container>
+  );
 }

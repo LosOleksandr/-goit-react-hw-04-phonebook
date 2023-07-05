@@ -10,10 +10,10 @@ import {
 export default function PhonebookList({ contacts, deleteContact }) {
   return (
     <ListContainer>
-      {contacts.map(({ id, name, number }) => (
+      {contacts.map(({ id, firstName, phoneNumber }) => (
         <ListItem key={id}>
           <ListText>
-            {name}: {number}
+            {firstName}: {phoneNumber}
           </ListText>
           <ListBtn onClick={() => deleteContact(id)} type="button">
             Delete
